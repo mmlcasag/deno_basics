@@ -1,28 +1,20 @@
-// let message: string;
-// message = 'Hi there!';
-// console.log(message);
-// deno run app.ts
+// you dont need to npm install this
+// it is not built into deno
+// you actually import a remote repository
+import { serve } from "https://deno.land/std/http/server.ts";
 
-const text = 'This is a text - and it should be stored in a file';
+const server = serve({ port: 3000 });
 
-// Important: Download VS Code Deno extension!!!
+// server is an async iterable
+// so we can iterate it using for
+// and since it is async, there is the await
+// in practice, this is an infinite loop
+// it keeps running, and whenever there's a request
+// it executes the code within
+for await (const req of server) {
+    req.respond({ body: "Hello World\n" });
+}
 
-const encoder = new TextEncoder();
-const data = encoder.encode(text);
-
-Deno.writeFile('denofile.txt', data)
-    .then(result => {
-        console.log('Wrote successfully to the file');
-    })
-    .catch(err => {
-        console.log(err);
-    });
-
-// if you try to run this code using "deno run app.ts" you will get a permission error
-// this happens because node is secure by default
-// this means you need permission to read or write files, for example
-// and how to give permission to write files?
-// "deno run --allow-write app.ts" --> this gives permission to write any file
-// "deno run --allow-read app.ts --> this gives permission to read any file
-// "deno run --allow-write=denofile.txt app.ts --> this gives permission to write just denofile.txt file
-// so, now i will run "deno run --allow-write=denofile.txt app.ts" and it will work!
+// when trying to run this it crashes because of PermissionDenied
+// to make sure that this code works you have to set permission to allow network access
+// this permission is "deno run --allow-net app.ts"

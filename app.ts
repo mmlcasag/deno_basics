@@ -10,7 +10,7 @@ const text = 'This is a text - and it should be stored in a file';
 const encoder = new TextEncoder();
 const data = encoder.encode(text);
 
-Deno.writeFile('message.txt', data)
+Deno.writeFile('denofile.txt', data)
     .then(result => {
         console.log('Wrote successfully to the file');
     })
@@ -24,5 +24,5 @@ Deno.writeFile('message.txt', data)
 // and how to give permission to write files?
 // "deno run --allow-write app.ts" --> this gives permission to write any file
 // "deno run --allow-read app.ts --> this gives permission to read any file
-// "deno run --allow-write=message.txt app.ts --> this gives permission to write just message.txt file
-// so, now i will run "deno run --allow-write=message.txt app.ts" and it will work!
+// "deno run --allow-write=denofile.txt app.ts --> this gives permission to write just denofile.txt file
+// so, now i will run "deno run --allow-write=denofile.txt app.ts" and it will work!

@@ -54,29 +54,33 @@ router.post('/todo', async ctx => {
 });
 
 router.put('/todo/:id', async ctx => {
-    const id = ctx.params.id;
+    const id = ctx.params.id!; // to make it clear to typescript that this will never be undefined
     
     const body = await ctx.request.body();
     const text = body.value.text;
 
-    const todoIndex = todos.findIndex(todo => todo.id === id);
-
-    todos[todoIndex] = {
-        id: todos[todoIndex].id, 
+    const todo = {
+        id: id,
         text: text
     };
 
+    await getDatabaseConnection()
+        .collection('todos')
+        .updateOne({ _id: ObjectId(id) }, { $set: { text: text } });
+    
     ctx.response.body = { 
         result: 'success',
         message: 'To do updated successfully',
-        todo: todos[todoIndex]
+        todo: todo
     };
 });
 
-router.delete('/todo/:id', ctx => {
-    const id = ctx.params.id;
+router.delete('/todo/:id', async ctx => {
+    const id = ctx.params.id!; // to make it clear to typescript that this will never be undefined
 
-    todos = todos.filter(todo => todo.id !== id);
+    await getDatabaseConnection()
+        .collection('todos')
+        .deleteOne({ _id: ObjectId(id) });
 
     ctx.response.body = { 
         result: 'success',

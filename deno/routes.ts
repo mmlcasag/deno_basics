@@ -1,21 +1,33 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
+import { ObjectId } from "https://deno.land/x/mongo@v0.8.0/mod.ts";
 
 import { getDatabaseConnection } from "./database.ts";
 
 const router = new Router();
 
 interface Todo {
-    id: string,
+    id?: string, // this makes this attribute is optional
     text: string
 };
 
 let todos: Array<Todo> = [];
 
-router.get('/todo', ctx => {
+router.get('/todo', async ctx => {
+    // this returns the todos list from the database in the mongo format
+    // so this is an array of objects of type _id objectid and text string
+    const todos = await getDatabaseConnection().collection('todos').find();
+    
+    const transformedTodos = todos.map((todo: { _id: ObjectId, text: string }) => {
+        return { 
+            id: todo._id.$oid, // this converts it to string
+            text: todo.text
+        };
+    });
+
     ctx.response.body = { 
         result: 'success',
         message: 'Activities fetched successfully',
-        todos: todos
+        todos: transformedTodos
     };
 });
 
@@ -27,11 +39,12 @@ router.post('/todo', async ctx => {
     const text = body.value.text;
 
     const newTodo: Todo = {
-        id: new Date().toISOString(),
         text: text
     };
+    
+    const id = await getDatabaseConnection().collection('todos').insertOne(newTodo);
 
-    todos.push(newTodo);
+    newTodo.id = id.$oid; // this converts it to string
 
     ctx.response.body = { 
         result: 'success',

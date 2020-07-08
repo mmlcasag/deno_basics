@@ -19,3 +19,9 @@ app.use(todoRoutes.routes());
 app.use(todoRoutes.allowedMethods());
 
 await app.listen({ port: 8000 });
+
+// to run you need to type
+// deno run --allow-read --allow-write --allow-net --allow-plugin --unstable app.ts
+// --allow-net because of oak
+// --allow-read --allow-write because of the database
+// --allow-plugin --unstable because of the third-party package mongo

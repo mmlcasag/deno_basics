@@ -1,7 +1,11 @@
 import { Application } from "https://deno.land/x/oak/mod.ts";
+
+import { connectDatabase } from "./database.ts";
 import todoRoutes from "./routes.ts";
 
 const app = new Application();
+
+connectDatabase();
 
 // handling CORS errors
 app.use(async (ctx, next) => {
